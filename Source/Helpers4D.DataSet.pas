@@ -5,11 +5,14 @@ interface
 uses
   Data.DB,
   Helpers4D.Objects,
+  Helpers4D.RTTI,
+  System.Rtti,
   System.SysUtils,
   System.Variants,
   System.Classes;
 
-type THelpers4DDataSet = class helper for TDataSet
+type
+  THelpers4DDataSet = class helper for TDataSet
 
   public
     function Clear: TDataSet;
@@ -26,7 +29,14 @@ type THelpers4DDataSet = class helper for TDataSet
 
     function SetFieldValue(FieldName: string; FieldValue: Variant): TDataSet;
     function GetFieldValue(FieldName: string; DefaultValue: Variant): Variant;
-end;
+
+    procedure ToObject(AObject: TObject);
+  end;
+
+  THelpers4DField = class helper for TField
+  public
+    procedure SetValueToProperty(AObject: TObject; AProp: TRttiProperty);
+  end;
 
 implementation
 
@@ -126,6 +136,67 @@ begin
   field := FindField(FieldName);
   if Assigned(field) then
     field.Value := FieldValue;
+end;
+
+procedure THelpers4DDataSet.ToObject(AObject: TObject);
+var
+  i: Integer;
+  field: TField;
+  rttiProp: TRttiProperty;
+begin
+  if (not Assigned(AObject)) or (not Self.Active) then
+    Exit;
+
+  for i := 0 to Pred(AObject.GetPropertyCount) do
+  begin
+    rttiProp := AObject.GetProperty(i);
+    field := Self.FindField(rttiProp.Name);
+    if not Assigned(field) then
+      Continue;
+
+    field.SetValueToProperty(AObject, rttiProp);
+  end;
+end;
+
+{ THelpers4DField }
+
+procedure THelpers4DField.SetValueToProperty(AObject: TObject; AProp: TRttiProperty);
+begin
+  if AProp.IsString then
+  begin
+    AProp.SetValue(AObject, Self.AsString);
+    Exit;
+  end;
+
+  if AProp.IsInteger then
+  begin
+    AProp.SetValue(AObject, Self.AsInteger);
+    Exit;
+  end;
+
+  if AProp.IsFloat then
+  begin
+    AProp.SetValue(AObject, Self.AsFloat);
+    Exit;
+  end;
+
+  if AProp.IsDateTime then
+  begin
+    AProp.SetValue(AObject, Self.AsDateTime);
+    Exit;
+  end;
+
+  if AProp.IsBoolean then
+  begin
+    AProp.SetValue(AObject, Self.AsBoolean);
+    Exit;
+  end;
+
+  if AProp.IsVariant then
+  begin
+    AProp.SetValue(AObject, Self.AsVariant);
+    Exit;
+  end;
 end;
 
 end.

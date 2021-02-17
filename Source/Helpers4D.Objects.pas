@@ -11,11 +11,13 @@ uses
 type THelpers4DObject = class helper for TObject
   private
     function GetType: TRttiType;
-    function GetProperty(Name: String): TRttiProperty;
 
   public
     function invokeMethod(const MethodName: string; const Parameters: array of TValue): TValue;
     function GetPropertyValue(Name: String): TValue;
+    function GetPropertyCount: Integer;
+    function GetProperty(Index: Integer): TRttiProperty; overload;
+    function GetProperty(Name: String): TRttiProperty; overload;
     procedure SetPropertyValue(Name, Value: String);
 
     class function GetAttribute<T: TCustomAttribute>: T;
@@ -41,6 +43,16 @@ end;
 function THelpers4DObject.GetProperty(Name: String): TRttiProperty;
 begin
   result := GetType.GetProperty(Name);
+end;
+
+function THelpers4DObject.GetProperty(Index: Integer): TRttiProperty;
+begin
+  result := GetType.GetProperties[Index];
+end;
+
+function THelpers4DObject.GetPropertyCount: Integer;
+begin
+  result := Length(GetType.GetProperties);
 end;
 
 function THelpers4DObject.GetPropertyValue(Name: String): TValue;

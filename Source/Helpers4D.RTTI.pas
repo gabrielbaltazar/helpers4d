@@ -53,6 +53,13 @@ type
     function IsEmpty(AObject: TObject): Boolean;
 
     function GetListType(AObject: TObject): TRttiType;
+
+    procedure SetValue(AObject: TObject; Value: String); overload;
+    procedure SetValue(AObject: TObject; Value: Integer); overload;
+    procedure SetValue(AObject: TObject; Value: Double); overload;
+    procedure SetValue(AObject: TObject; Value: Boolean); overload;
+    procedure SetValueDate(AObject: TObject; Value: TDateTime);
+    procedure SetValueVariant(AObject: TObject; Value: Variant);
   end;
 
 implementation
@@ -230,6 +237,36 @@ end;
 function THelpers4DPropertyHelper.IsVariant: Boolean;
 begin
   result := Self.PropertyType.TypeKind = tkVariant;
+end;
+
+procedure THelpers4DPropertyHelper.SetValueDate(AObject: TObject; Value: TDateTime);
+begin
+  Self.SetValue(AObject, TValue.From<TDateTime>(Value));
+end;
+
+procedure THelpers4DPropertyHelper.SetValueVariant(AObject: TObject; Value: Variant);
+begin
+  Self.SetValue(AObject, TValue.FromVariant(Value));
+end;
+
+procedure THelpers4DPropertyHelper.SetValue(AObject: TObject; Value: Double);
+begin
+  Self.SetValue(AObject, TValue.From<Double>(Value));
+end;
+
+procedure THelpers4DPropertyHelper.SetValue(AObject: TObject; Value: Integer);
+begin
+  Self.SetValue(AObject, TValue.From<Integer>(Value));
+end;
+
+procedure THelpers4DPropertyHelper.SetValue(AObject: TObject; Value: String);
+begin
+  Self.SetValue(AObject, TValue.From<String>(Value));
+end;
+
+procedure THelpers4DPropertyHelper.SetValue(AObject: TObject; Value: Boolean);
+begin
+  Self.SetValue(AObject, TValue.From<Boolean>(Value));
 end;
 
 end.
