@@ -17,6 +17,14 @@ type THerlpers4DDateTime = record helper for TDateTime
 
     function FormatYYYY_MM_DD: string;
 
+    function IsSunday: Boolean;
+    function IsMonday: Boolean;
+    function IsTuesday: Boolean;
+    function IsWednesday: Boolean;
+    function IsThursday: Boolean;
+    function IsFriday: Boolean;
+    function IsSaturday: Boolean;
+
     procedure fromIso8601ToDateTime(AValue: String);
 end;
 
@@ -51,6 +59,16 @@ end;
 procedure THerlpers4DDateTime.fromIso8601ToDateTime(AValue: String);
 begin
   Self := Iso8601ToDateTime(AValue);
+end;
+
+function THerlpers4DDateTime.IsFriday: Boolean;
+begin
+  result := DayOfWeek(Self) = 6;
+end;
+
+function THerlpers4DDateTime.IsMonday: Boolean;
+begin
+  result := DayOfWeek(Self) = 2;
 end;
 
 function THerlpers4DDateTime.Iso8601ToDateTime(AValue: String): TDateTime;
@@ -100,6 +118,31 @@ begin
           Result := EncodeDate(Y, M, D) + EncodeTime(HH, MI, SS, 0);
       end;
   end;
+end;
+
+function THerlpers4DDateTime.IsSaturday: Boolean;
+begin
+  result := DayOfWeek(Self) = 7;
+end;
+
+function THerlpers4DDateTime.IsSunday: Boolean;
+begin
+  result := DayOfWeek(Self) = 1;
+end;
+
+function THerlpers4DDateTime.IsThursday: Boolean;
+begin
+  result := DayOfWeek(Self) = 5;
+end;
+
+function THerlpers4DDateTime.IsTuesday: Boolean;
+begin
+  result := DayOfWeek(Self) = 3;
+end;
+
+function THerlpers4DDateTime.IsWednesday: Boolean;
+begin
+  result := DayOfWeek(Self) = 4;
 end;
 
 end.
