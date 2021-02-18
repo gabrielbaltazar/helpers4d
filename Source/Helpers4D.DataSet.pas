@@ -218,12 +218,11 @@ end;
 
 function THelpers4DDataSet.ToObject<T>(AFilter: String): T;
 begin
-  result := T.create;
+  FilterDataSet(AFilter);
   try
-    ToObject(Result, AFilter);
-  except
-    Result.Free;
-    raise;
+    Result := ToObject<T>;
+  finally
+    Filtered := False;
   end;
 end;
 
@@ -257,6 +256,9 @@ end;
 
 function THelpers4DDataSet.ToObject<T>: T;
 begin
+  if IsEmpty then
+    Exit(nil);
+
   result := T.create;
   try
     ToObject(Result);
