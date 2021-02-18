@@ -5,20 +5,25 @@ interface
 uses
   Helpers4D.RTTI,
   System.Rtti,
+  System.JSON,
   System.SysUtils,
   System.Classes;
 
 type THelpers4DObject = class helper for TObject
   private
-    function GetType: TRttiType;
 
   public
     function invokeMethod(const MethodName: string; const Parameters: array of TValue): TValue;
+    function GetProperties: TArray<TRttiProperty>;
     function GetPropertyValue(Name: String): TValue;
     function GetPropertyCount: Integer;
     function GetProperty(Index: Integer): TRttiProperty; overload;
     function GetProperty(Name: String): TRttiProperty; overload;
+    function GetType: TRttiType;
     procedure SetPropertyValue(Name, Value: String);
+
+    function ToJSONObject: TJSONObject;
+    procedure FromJSONObject(Value: TJSONObject);
 
     class function GetAttribute<T: TCustomAttribute>: T;
 end;
@@ -26,6 +31,14 @@ end;
 implementation
 
 { THelpers4DObject }
+
+uses
+  Helpers4D.JSON;
+
+procedure THelpers4DObject.FromJSONObject(Value: TJSONObject);
+begin
+  Value.ToObject(Self);
+end;
 
 class function THelpers4DObject.GetAttribute<T>: T;
 var
@@ -38,6 +51,11 @@ begin
   for i := 0 to Pred(Length(rType.GetAttributes)) do
     if rType.GetAttributes[i].ClassNameIs(T.className) then
       Exit(T( rType.GetAttributes[i]));
+end;
+
+function THelpers4DObject.GetProperties: TArray<TRttiProperty>;
+begin
+  result := GetType.GetProperties;
 end;
 
 function THelpers4DObject.GetProperty(Name: String): TRttiProperty;
@@ -92,6 +110,11 @@ begin
   rProp := GetProperty(Name);
   if Assigned(rProp) then
     rProp.SetValue(Self, TValue.From<String>(Value));
+end;
+
+function THelpers4DObject.ToJSONObject: TJSONObject;
+begin
+  result := TJSONObject.FromObject(Self);
 end;
 
 end.

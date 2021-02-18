@@ -59,6 +59,7 @@ type
     procedure SetValue(AObject: TObject; Value: Double); overload;
     procedure SetValue(AObject: TObject; Value: Boolean); overload;
     procedure SetValueDate(AObject: TObject; Value: TDateTime);
+    procedure SetValueEnum(AObject: TObject; Value: Integer);
     procedure SetValueVariant(AObject: TObject; Value: Variant);
   end;
 
@@ -242,6 +243,11 @@ end;
 procedure THelpers4DPropertyHelper.SetValueDate(AObject: TObject; Value: TDateTime);
 begin
   Self.SetValue(AObject, TValue.From<TDateTime>(Value));
+end;
+
+procedure THelpers4DPropertyHelper.SetValueEnum(AObject: TObject; Value: Integer);
+begin
+  Self.SetValue(AObject, TValue.FromOrdinal(Self.PropertyType.Handle, Value));
 end;
 
 procedure THelpers4DPropertyHelper.SetValueVariant(AObject: TObject; Value: Variant);

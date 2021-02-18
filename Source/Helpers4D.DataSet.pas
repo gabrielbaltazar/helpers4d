@@ -6,6 +6,7 @@ uses
   Data.DB,
   Helpers4D.Objects,
   Helpers4D.RTTI,
+  System.Generics.Collections,
   System.Rtti,
   System.SysUtils,
   System.Variants,
@@ -17,6 +18,7 @@ type
   public
     function Clear: TDataSet;
     function CreateDataSet: TDataSet;
+    function FilterDataSet(AFilter: String): TDataSet;
     function IndexFieldNames(Value: String): TDataSet;
     function MasterFields(Value: String): TDataSet;
 
@@ -27,10 +29,21 @@ type
     function AddBooleanField(const Name: String): TDataSet;
     function AddFloatField(const Name: String): TDataSet;
 
-    function SetFieldValue(FieldName: string; FieldValue: Variant): TDataSet;
-    function GetFieldValue(FieldName: string; DefaultValue: Variant): Variant;
+    procedure ForEach(Proc: TProc); overload;
+    procedure ForEach(Proc: TProc<TDataSet>); overload;
 
-    procedure ToObject(AObject: TObject);
+    function SetValue(FieldName: string; FieldValue: Variant): TDataSet;
+    function GetValue(FieldName: string; DefaultValue: Variant): Variant;
+
+    function ToObject<T: class, constructor>: T; overload;
+    function ToObject<T: class, constructor>(AFilter: String): T; overload;
+    procedure ToObject(AObject: TObject); overload;
+    procedure ToObject(AObject: TObject; AFilter: String); overload;
+
+    function ToObjectList<T: class, constructor>: TObjectList<T>; overload;
+    function ToObjectList<T: class, constructor>(AFilter: String): TObjectList<T>; overload;
+    procedure ToObjectList<T: class, constructor>(AList: TObjectList<T>; AFilter: String); overload;
+    procedure ToObjectList<T: class, constructor>(AList: TObjectList<T>); overload;
   end;
 
   THelpers4DField = class helper for TField
@@ -103,7 +116,45 @@ begin
   Self.invokeMethod('createDataSet', []);
 end;
 
-function THelpers4DDataSet.GetFieldValue(FieldName: string; DefaultValue: Variant): Variant;
+function THelpers4DDataSet.FilterDataSet(AFilter: String): TDataSet;
+begin
+  result := Self;
+  Filtered := False;
+  Filter   := AFilter;
+  Filtered := True;
+  First;
+end;
+
+procedure THelpers4DDataSet.ForEach(Proc: TProc<TDataSet>);
+var
+  bookmark: TBookMark;
+begin
+  bookmark := GetBookmark;
+  try
+    DisableControls;
+    First;
+    while not Eof do
+    begin
+      Proc(self);
+      Next;
+    end;
+  finally
+    GotoBookmark(bookmark);
+    FreeBookmark(bookmark);
+    EnableControls;
+  end;
+end;
+
+procedure THelpers4DDataSet.ForEach(Proc: TProc);
+begin
+  ForEach(
+    procedure(ds: TDataset)
+    begin
+      Proc;
+    end);
+end;
+
+function THelpers4DDataSet.GetValue(FieldName: string; DefaultValue: Variant): Variant;
 var
   field: TField;
 begin
@@ -128,7 +179,7 @@ begin
   Self.SetPropertyValue('MasterFields', Value);
 end;
 
-function THelpers4DDataSet.SetFieldValue(FieldName: string; FieldValue: Variant): TDataSet;
+function THelpers4DDataSet.SetValue(FieldName: string; FieldValue: Variant): TDataSet;
 var
   field: TField;
 begin
@@ -155,6 +206,100 @@ begin
       Continue;
 
     field.SetValueToProperty(AObject, rttiProp);
+  end;
+end;
+
+procedure THelpers4DDataSet.ToObject(AObject: TObject; AFilter: String);
+begin
+  FilterDataSet(AFilter);
+  ToObject(AObject);
+  Filtered := False;
+end;
+
+function THelpers4DDataSet.ToObject<T>(AFilter: String): T;
+begin
+  result := T.create;
+  try
+    ToObject(Result, AFilter);
+  except
+    Result.Free;
+    raise;
+  end;
+end;
+
+procedure THelpers4DDataSet.ToObjectList<T>(AList: TObjectList<T>);
+var
+  obj: T;
+begin
+  Self.ForEach(
+  procedure
+  begin
+    obj := T.create;
+    try
+      Self.ToObject(obj);
+      AList.Add(obj);
+    except
+      obj.Free;
+      raise;
+    end;
+  end);
+end;
+
+procedure THelpers4DDataSet.ToObjectList<T>(AList: TObjectList<T>; AFilter: String);
+begin
+  FilterDataSet(AFilter);
+  try
+    ToObjectList<T>(AList);
+  finally
+    Filtered := False;
+  end;
+end;
+
+function THelpers4DDataSet.ToObject<T>: T;
+begin
+  result := T.create;
+  try
+    ToObject(Result);
+  except
+    Result.Free;
+    raise;
+  end;
+end;
+
+function THelpers4DDataSet.ToObjectList<T>(AFilter: String): TObjectList<T>;
+begin
+  FilterDataSet(AFilter);
+  try
+    Result := ToObjectList<T>;
+  finally
+    Filtered := False;
+  end;
+end;
+
+function THelpers4DDataSet.ToObjectList<T>: TObjectList<T>;
+var
+  obj: T;
+  list: TObjectList<T>;
+begin
+  list := TObjectList<T>.create;
+  try
+    Self.ForEach(
+      procedure
+      begin
+        obj := T.create;
+        try
+          Self.ToObject(obj);
+          list.Add(obj);
+        except
+          obj.Free;
+          raise;
+        end;
+      end);
+
+    result := list;
+  except
+    list.Free;
+    raise;
   end;
 end;
 
@@ -192,9 +337,15 @@ begin
     Exit;
   end;
 
+  if AProp.IsEnum then
+  begin
+    AProp.SetValueEnum(AObject, Self.AsInteger);
+    Exit;
+  end;
+
   if AProp.IsVariant then
   begin
-    AProp.SetValue(AObject, Self.AsVariant);
+    AProp.SetValueVariant(AObject, Self.AsVariant);
     Exit;
   end;
 end;
