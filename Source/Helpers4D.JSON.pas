@@ -60,6 +60,8 @@ type
 
     function ToObjectList<T: class, constructor>: TObjectList<T>; overload;
     procedure ToObjectList<T: class, constructor>(AList: TObjectList<T>); overload;
+
+    class function FromObjectList<T: class>(AList: TObjectList<T>; bIgnoreEmptyValues: Boolean = True): TJSONArray;
   end;
 
   THelpers4DJSONValue = class helper for TJSONValue
@@ -497,6 +499,15 @@ end;
 function THelpers4DJSONArray.ActiveJSONObject: TJSONObject;
 begin
   result := Items[Count - 1] as TJSONObject;
+end;
+
+class function THelpers4DJSONArray.FromObjectList<T>(AList: TObjectList<T>; bIgnoreEmptyValues: Boolean = True): TJSONArray;
+var
+  obj: T;
+begin
+  result := TJSONArray.Create;
+  for obj in AList do
+    Result.Add(TJSONObject.FromObject(obj, bIgnoreEmptyValues));
 end;
 
 function THelpers4DJSONArray.ItemAsJSONObject(Index: Integer): TJSONObject;
