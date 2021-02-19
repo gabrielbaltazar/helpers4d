@@ -9,6 +9,7 @@ uses
   Helpers4D.Objects,
   System.Generics.Collections,
   System.Rtti,
+  System.Classes,
   System.SysUtils,
   System.StrUtils,
   System.TypInfo,
@@ -47,6 +48,8 @@ type
 
     function ClearEmptyValues: TJSONObject;
 
+    function SaveToFile(const AFileName: string): TJSONObject;
+
     class function FromObject(Value: TObject; bIgnoreEmptyValues: Boolean = True): TJSONObject;
     class function FromString(Value: String; bIgnoreEmptyValues: Boolean = True): TJSONObject;
     class procedure ToObject(JSONString: String; AObject: TObject); overload;
@@ -66,6 +69,8 @@ type
     class function FromString(Value: String; bIgnoreEmptyValues: Boolean = True): TJSONArray;
 
     function ClearEmptyValues: TJSONArray;
+
+    function SaveToFile(const AFileName: string): TJSONArray;
   end;
 
   THelpers4DJSONValue = class helper for TJSONValue
@@ -210,6 +215,20 @@ begin
     Result[Length(Result)] := '}'
   else
     Result := Result + '}';
+end;
+
+function THelpers4DJSONObject.SaveToFile(const AFileName: string): TJSONObject;
+var
+  jsonFile: TStrings;
+begin
+  result := Self;
+  jsonFile := TStringList.Create;
+  try
+    jsonFile.Text := Self.ToString;
+    jsonFile.SaveToFile(AFileName);
+  finally
+    jsonFile.Free;
+  end;
 end;
 
 procedure THelpers4DJSONObject.ToObject(AObject: TObject);
@@ -541,6 +560,20 @@ end;
 function THelpers4DJSONArray.ItemAsJSONObject(Index: Integer): TJSONObject;
 begin
   result := Items[Index] as TJSONObject;
+end;
+
+function THelpers4DJSONArray.SaveToFile(const AFileName: string): TJSONArray;
+var
+  jsonFile: TStrings;
+begin
+  result := Self;
+  jsonFile := TStringList.Create;
+  try
+    jsonFile.Text := Self.ToString;
+    jsonFile.SaveToFile(AFileName);
+  finally
+    jsonFile.Free;
+  end;
 end;
 
 class function THelpers4DJSONArray.ToObjectList<T>(JSONString: String): TObjectList<T>;
