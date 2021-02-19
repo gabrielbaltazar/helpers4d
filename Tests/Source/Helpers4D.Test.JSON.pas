@@ -7,7 +7,7 @@ uses
   Helpers4D.Test.Base,
   Helpers4D.JSON,
   Helpers4D.Objects,
-  Herlpers4D.DateTime,
+  Helpers4D.DateTime,
   Helpers4D.Test.Classes,
   System.DateUtils,
   System.Generics.Collections,
