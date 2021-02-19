@@ -18,10 +18,14 @@ uses
   Helpers4D.JSON in '..\Source\Helpers4D.JSON.pas',
   Helpers4D.Objects in '..\Source\Helpers4D.Objects.pas',
   Helpers4D.RTTI in '..\Source\Helpers4D.RTTI.pas',
-  Herlpers4D.DateTime in '..\Source\Herlpers4D.DateTime.pas',
+  Helpers4D.DateTime in '..\Source\Helpers4D.DateTime.pas',
   Helpers4D.Test.Classes in 'Source\Helpers4D.Test.Classes.pas',
   Helpers4D.Test.DataSet in 'Source\Helpers4D.Test.DataSet.pas',
-  Helpers4D.Test.JSON in 'Source\Helpers4D.Test.JSON.pas';
+  Helpers4D.Test.JSON in 'Source\Helpers4D.Test.JSON.pas',
+  Helpers4D.Horse in '..\Source\Helpers4D.Horse.pas',
+  Helpers4D.Horse.Exception in '..\Source\Helpers4D.Horse.Exception.pas',
+  Helpers4D.StringList in '..\Source\Helpers4D.StringList.pas',
+  Helpers4D.Test.StringList in 'Source\Helpers4D.Test.StringList.pas';
 
 {$IFNDEF TESTINSIGHT}
 var

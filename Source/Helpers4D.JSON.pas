@@ -4,11 +4,12 @@ interface
 
 uses
   System.JSON,
-  Herlpers4D.DateTime,
+  Helpers4D.DateTime,
   Helpers4D.RTTI,
   Helpers4D.Objects,
   System.Generics.Collections,
   System.Rtti,
+  System.Classes,
   System.SysUtils,
   System.StrUtils,
   System.TypInfo,
@@ -47,8 +48,11 @@ type
 
     function ClearEmptyValues: TJSONObject;
 
+    function SaveToFile(const AFileName: string): TJSONObject;
+
     class function FromObject(Value: TObject; bIgnoreEmptyValues: Boolean = True): TJSONObject;
     class function FromString(Value: String; bIgnoreEmptyValues: Boolean = True): TJSONObject;
+    class function FromFile(const FileName: String): TJSONObject;
     class procedure ToObject(JSONString: String; AObject: TObject); overload;
     class function ToObject<T: class, constructor>(JSONString: String): T; overload;
   end;
@@ -61,7 +65,14 @@ type
     function ToObjectList<T: class, constructor>: TObjectList<T>; overload;
     procedure ToObjectList<T: class, constructor>(AList: TObjectList<T>); overload;
 
+    class function ToObjectList<T: class, constructor>(JSONString: String): TObjectList<T>; overload;
     class function FromObjectList<T: class>(AList: TObjectList<T>; bIgnoreEmptyValues: Boolean = True): TJSONArray;
+    class function FromString(Value: String; bIgnoreEmptyValues: Boolean = True): TJSONArray;
+    class function FromFile(const FileName: String): TJSONArray;
+
+    function ClearEmptyValues: TJSONArray;
+
+    function SaveToFile(const AFileName: string): TJSONArray;
   end;
 
   THelpers4DJSONValue = class helper for TJSONValue
@@ -138,6 +149,19 @@ begin
   end;
 end;
 
+class function THelpers4DJSONObject.FromFile(const FileName: String): TJSONObject;
+var
+  jsonFile: TStrings;
+begin
+  jsonFile := TStringList.Create;
+  try
+    jsonFile.LoadFromFile(FileName);
+    Result := Self.FromString(FileName);
+  finally
+    jsonFile.Free;
+  end;
+end;
+
 class function THelpers4DJSONObject.FromObject(Value: TObject; bIgnoreEmptyValues: Boolean = True): TJSONObject;
 var
   jsonString: string;
@@ -206,6 +230,20 @@ begin
     Result[Length(Result)] := '}'
   else
     Result := Result + '}';
+end;
+
+function THelpers4DJSONObject.SaveToFile(const AFileName: string): TJSONObject;
+var
+  jsonFile: TStrings;
+begin
+  result := Self;
+  jsonFile := TStringList.Create;
+  try
+    jsonFile.Text := Self.ToString;
+    jsonFile.SaveToFile(AFileName);
+  finally
+    jsonFile.Free;
+  end;
 end;
 
 procedure THelpers4DJSONObject.ToObject(AObject: TObject);
@@ -501,6 +539,31 @@ begin
   result := Items[Count - 1] as TJSONObject;
 end;
 
+function THelpers4DJSONArray.ClearEmptyValues: TJSONArray;
+var
+  i: Integer;
+begin
+  result := Self;
+  for i := 0 to Pred(Count) do
+  begin
+    if ItemAsJSONObject(i) <> nil then
+      ItemAsJSONObject(i).ClearEmptyValues;
+  end;
+end;
+
+class function THelpers4DJSONArray.FromFile(const FileName: String): TJSONArray;
+var
+  jsonFile: TStrings;
+begin
+  jsonFile := TStringList.Create;
+  try
+    jsonFile.LoadFromFile(FileName);
+    Result := Self.FromString(FileName);
+  finally
+    jsonFile.Free;
+  end;
+end;
+
 class function THelpers4DJSONArray.FromObjectList<T>(AList: TObjectList<T>; bIgnoreEmptyValues: Boolean = True): TJSONArray;
 var
   obj: T;
@@ -510,9 +573,47 @@ begin
     Result.Add(TJSONObject.FromObject(obj, bIgnoreEmptyValues));
 end;
 
+class function THelpers4DJSONArray.FromString(Value: String; bIgnoreEmptyValues: Boolean = True): TJSONArray;
+var
+  json : string;
+begin
+  json := Value.Replace(#$D, EmptyStr)
+               .Replace(#$A, EmptyStr);
+
+  result := TJSONObject.ParseJSONValue(json) as TJSONArray;
+  if bIgnoreEmptyValues then
+    Result.ClearEmptyValues;
+end;
+
 function THelpers4DJSONArray.ItemAsJSONObject(Index: Integer): TJSONObject;
 begin
   result := Items[Index] as TJSONObject;
+end;
+
+function THelpers4DJSONArray.SaveToFile(const AFileName: string): TJSONArray;
+var
+  jsonFile: TStrings;
+begin
+  result := Self;
+  jsonFile := TStringList.Create;
+  try
+    jsonFile.Text := Self.ToString;
+    jsonFile.SaveToFile(AFileName);
+  finally
+    jsonFile.Free;
+  end;
+end;
+
+class function THelpers4DJSONArray.ToObjectList<T>(JSONString: String): TObjectList<T>;
+var
+  json: TJSONArray;
+begin
+  json := FromString(JSONString);
+  try
+    result := json.ToObjectList<T>;
+  finally
+    json.Free;
+  end;
 end;
 
 procedure THelpers4DJSONArray.ToObjectList<T>(AList: TObjectList<T>);

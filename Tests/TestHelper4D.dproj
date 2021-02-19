@@ -51,7 +51,7 @@
         <UsingDelphiRTL>true</UsingDelphiRTL>
         <Icon_MainIcon>$(BDS)\bin\delphi_PROJECTICON.ico</Icon_MainIcon>
         <Icns_MainIcns>$(BDS)\bin\delphi_PROJECTICNS.icns</Icns_MainIcns>
-        <DCC_UnitSearchPath>$(DUnitX);$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_UnitSearchPath>$(DUnitX);modules\.dcp;modules\.dcu;modules;modules\horse\src;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <SanitizedProjectName>TestHelper4D</SanitizedProjectName>
         <DCC_DUPLICATE_CTOR_DTOR>false</DCC_DUPLICATE_CTOR_DTOR>
         <VerInfo_Locale>1046</VerInfo_Locale>
@@ -95,10 +95,14 @@
         <DCCReference Include="..\Source\Helpers4D.JSON.pas"/>
         <DCCReference Include="..\Source\Helpers4D.Objects.pas"/>
         <DCCReference Include="..\Source\Helpers4D.RTTI.pas"/>
-        <DCCReference Include="..\Source\Herlpers4D.DateTime.pas"/>
+        <DCCReference Include="..\Source\Helpers4D.DateTime.pas"/>
         <DCCReference Include="Source\Helpers4D.Test.Classes.pas"/>
         <DCCReference Include="Source\Helpers4D.Test.DataSet.pas"/>
         <DCCReference Include="Source\Helpers4D.Test.JSON.pas"/>
+        <DCCReference Include="..\Source\Helpers4D.Horse.pas"/>
+        <DCCReference Include="..\Source\Helpers4D.Horse.Exception.pas"/>
+        <DCCReference Include="..\Source\Helpers4D.StringList.pas"/>
+        <DCCReference Include="Source\Helpers4D.Test.StringList.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
