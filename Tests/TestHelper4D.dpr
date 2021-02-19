@@ -23,7 +23,8 @@ uses
   Helpers4D.Test.DataSet in 'Source\Helpers4D.Test.DataSet.pas',
   Helpers4D.Test.JSON in 'Source\Helpers4D.Test.JSON.pas',
   Helpers4D.Horse in '..\Source\Helpers4D.Horse.pas',
-  Helpers4D.Horse.Exception in '..\Source\Helpers4D.Horse.Exception.pas';
+  Helpers4D.Horse.Exception in '..\Source\Helpers4D.Horse.Exception.pas',
+  Helpers4D.StringList in '..\Source\Helpers4D.StringList.pas';
 
 {$IFNDEF TESTINSIGHT}
 var
