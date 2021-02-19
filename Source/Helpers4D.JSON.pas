@@ -52,6 +52,7 @@ type
 
     class function FromObject(Value: TObject; bIgnoreEmptyValues: Boolean = True): TJSONObject;
     class function FromString(Value: String; bIgnoreEmptyValues: Boolean = True): TJSONObject;
+    class function FromFile(const FileName: String): TJSONObject;
     class procedure ToObject(JSONString: String; AObject: TObject); overload;
     class function ToObject<T: class, constructor>(JSONString: String): T; overload;
   end;
@@ -67,6 +68,7 @@ type
     class function ToObjectList<T: class, constructor>(JSONString: String): TObjectList<T>; overload;
     class function FromObjectList<T: class>(AList: TObjectList<T>; bIgnoreEmptyValues: Boolean = True): TJSONArray;
     class function FromString(Value: String; bIgnoreEmptyValues: Boolean = True): TJSONArray;
+    class function FromFile(const FileName: String): TJSONArray;
 
     function ClearEmptyValues: TJSONArray;
 
@@ -144,6 +146,19 @@ begin
         RemovePair(LPair.JsonString.Value).DisposeOf;
       end;
     end;
+  end;
+end;
+
+class function THelpers4DJSONObject.FromFile(const FileName: String): TJSONObject;
+var
+  jsonFile: TStrings;
+begin
+  jsonFile := TStringList.Create;
+  try
+    jsonFile.LoadFromFile(FileName);
+    Result := Self.FromString(FileName);
+  finally
+    jsonFile.Free;
   end;
 end;
 
@@ -533,6 +548,19 @@ begin
   begin
     if ItemAsJSONObject(i) <> nil then
       ItemAsJSONObject(i).ClearEmptyValues;
+  end;
+end;
+
+class function THelpers4DJSONArray.FromFile(const FileName: String): TJSONArray;
+var
+  jsonFile: TStrings;
+begin
+  jsonFile := TStringList.Create;
+  try
+    jsonFile.LoadFromFile(FileName);
+    Result := Self.FromString(FileName);
+  finally
+    jsonFile.Free;
   end;
 end;
 
