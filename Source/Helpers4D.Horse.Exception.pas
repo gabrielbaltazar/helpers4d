@@ -45,6 +45,12 @@ begin
       Res.Send<TJSONObject>(JSONError(E, E.Message));
     end;
 
+    on E: EHorseException do
+    begin
+      Res.Send<TJSONObject>(JSONError(E, E.Message));
+      Res.Status(E.Status.ToInteger);
+    end;
+
     on E: EHelpers4DHorse do
     begin
       Res.Send<TJSONObject>(JSONError(E, E.Message));
