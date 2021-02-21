@@ -28,6 +28,8 @@ type
 
     function GetBody<M: class, constructor>: M; overload;
     function GetBodyList<M: class, constructor>: TObjectList<M>; overload;
+
+    destructor Destroy; override;
   end;
 
 implementation
@@ -41,6 +43,13 @@ begin
 end;
 
 { THelpers4DHorseControllerObject<T> }
+
+destructor THelpers4DHorseControllerObject<T>.Destroy;
+begin
+  FModel.Free;
+  FList.Free;
+  inherited;
+end;
 
 function THelpers4DHorseControllerObject<T>.GetBody: T;
 begin
