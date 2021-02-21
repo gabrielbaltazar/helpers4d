@@ -103,6 +103,7 @@
         <DCCReference Include="..\Source\Helpers4D.Horse.Exception.pas"/>
         <DCCReference Include="..\Source\Helpers4D.StringList.pas"/>
         <DCCReference Include="Source\Helpers4D.Test.StringList.pas"/>
+        <DCCReference Include="..\Source\Helpers4D.Horse.Controller.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

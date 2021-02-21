@@ -25,7 +25,8 @@ uses
   Helpers4D.Horse in '..\Source\Helpers4D.Horse.pas',
   Helpers4D.Horse.Exception in '..\Source\Helpers4D.Horse.Exception.pas',
   Helpers4D.StringList in '..\Source\Helpers4D.StringList.pas',
-  Helpers4D.Test.StringList in 'Source\Helpers4D.Test.StringList.pas';
+  Helpers4D.Test.StringList in 'Source\Helpers4D.Test.StringList.pas',
+  Helpers4D.Horse.Controller in '..\Source\Helpers4D.Horse.Controller.pas';
 
 {$IFNDEF TESTINSIGHT}
 var
