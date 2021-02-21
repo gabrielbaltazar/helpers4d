@@ -52,8 +52,8 @@ type
     procedure NotFound  (AMessage: string; const Args: array of const);
     procedure BadRequest(AMessage: string; const Args: array of const);
 
-    function Send(Value: TObject; NotFoundMessage: String = 'Not Found'; AOwner: Boolean = True): THorseResponse; overload;
-    function Send<M: class, constructor>(Value: TObjectList<M>; AOwner: Boolean = True): THorseResponse; overload;
+    function Send(Value: TObject; AOwner: Boolean = False; NotFoundMessage: String = 'Not Found'): THorseResponse; overload;
+    function Send<M: class, constructor>(Value: TObjectList<M>; AOwner: Boolean = False): THorseResponse; overload;
   end;
 
   EHelpers4DHorse = class(Exception)
@@ -63,6 +63,15 @@ type
     property statusCode: Integer read FstatusCode;
 
     constructor create(AStatusCode: Integer; AMessage: String);
+  end;
+
+  THelpers4DHorseError = class
+  private
+    Ferror: String;
+    Fdescription: String;
+  public
+    property error: String read Ferror write Ferror;
+    property description: String read Fdescription write Fdescription;
   end;
 
 implementation
@@ -321,7 +330,7 @@ begin
     FreeAndNil(Value);
 end;
 
-function THelpers4DHorseResponse.Send(Value: TObject; NotFoundMessage: String; AOwner: Boolean): THorseResponse;
+function THelpers4DHorseResponse.Send(Value: TObject; AOwner: Boolean; NotFoundMessage: String): THorseResponse;
 begin
   result := Self;
   if not Assigned(value) then
