@@ -53,6 +53,10 @@ type
     function IsEmpty(AObject: TObject): Boolean;
 
     function GetListType(AObject: TObject): TRttiType;
+    function GetListCount(AObject: TObject): Integer;
+    function GetListArray(AObject: TObject): TValue;
+
+    function GetEnumValue(AObject: TObject): Integer;
 
     procedure SetValue(AObject: TObject; Value: String); overload;
     procedure SetValue(AObject: TObject; Value: Integer); overload;
@@ -126,6 +130,47 @@ begin
   for i := 0 to Pred(Length(Self.GetAttributes)) do
     if Self.GetAttributes[i].ClassNameIs(T.className) then
       Exit(T( Self.GetAttributes[i]));
+end;
+
+function THelpers4DPropertyHelper.GetEnumValue(AObject: TObject): Integer;
+begin
+  result := GetValue(AObject).AsOrdinal;
+end;
+
+function THelpers4DPropertyHelper.GetListArray(AObject: TObject): TValue;
+var
+  rttiType: TRttiType;
+  method  : TRttiMethod;
+  value   : TValue;
+begin
+  value := GetValue(AObject);
+
+  if value.AsObject = nil then
+    Exit('[]');
+
+  rttiType := value.AsObject.GetType;
+
+  method := rttiType.GetMethod('ToArray');
+  Result := method.Invoke(value.AsObject, []);
+end;
+
+function THelpers4DPropertyHelper.GetListCount(AObject: TObject): Integer;
+var
+  rttiType: TRttiType;
+  method  : TRttiMethod;
+  value   : TValue;
+begin
+  value := GetValue(AObject);
+
+  if value.AsObject = nil then
+    Exit(0);
+
+  rttiType := value.AsObject.GetType;
+
+  method := rttiType.GetMethod('ToArray');
+  value  := method.Invoke(value.AsObject, []);
+
+  Result := value.GetArrayLength;
 end;
 
 function THelpers4DPropertyHelper.GetListType(AObject: TObject): TRttiType;

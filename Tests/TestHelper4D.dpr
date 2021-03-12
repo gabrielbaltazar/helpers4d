@@ -26,7 +26,10 @@ uses
   Helpers4D.Horse.Exception in '..\Source\Helpers4D.Horse.Exception.pas',
   Helpers4D.StringList in '..\Source\Helpers4D.StringList.pas',
   Helpers4D.Test.StringList in 'Source\Helpers4D.Test.StringList.pas',
-  Helpers4D.Horse.Controller in '..\Source\Helpers4D.Horse.Controller.pas';
+  Helpers4D.Horse.Controller in '..\Source\Helpers4D.Horse.Controller.pas',
+  Helpers4D.Model.Test.Classes in 'Source\Helpers4D.Model.Test.Classes.pas',
+  Helpers4D.DTO.Test.Classes in 'Source\Helpers4D.DTO.Test.Classes.pas',
+  Helpers4D.Test.CopyObjects in 'Source\Helpers4D.Test.CopyObjects.pas';
 
 {$IFNDEF TESTINSIGHT}
 var
