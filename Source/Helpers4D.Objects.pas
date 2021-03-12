@@ -7,6 +7,7 @@ uses
   System.Rtti,
   System.JSON,
   System.SysUtils,
+  System.TypInfo,
   System.Classes;
 
 type THelpers4DObject = class helper for TObject
@@ -25,6 +26,8 @@ type THelpers4DObject = class helper for TObject
     function ToJSONObject: TJSONObject;
     procedure FromJSONObject(Value: TJSONObject);
 
+    procedure CopyFrom(ASourceObject: TObject);
+
     class function GetAttribute<T: TCustomAttribute>: T;
 end;
 
@@ -34,6 +37,62 @@ implementation
 
 uses
   Helpers4D.JSON;
+
+procedure THelpers4DObject.CopyFrom(ASourceObject: TObject);
+var
+  i: Integer;
+  rProp: TRttiProperty;
+  rSourceProp: TRttiProperty;
+  listType: TRttiType;
+  lValue: TValue;
+  AObject: TObject;
+begin
+  for rProp in Self.GetProperties do
+  begin
+    rSourceProp := ASourceObject.GetProperty(rProp.Name);
+    if not Assigned(rSourceProp) then
+      Continue;
+
+    if not rProp.IsWritable then
+      Continue;
+
+    try
+      if rProp.IsEnum then
+        rProp.SetValueEnum(Self, rSourceProp.GetEnumValue(ASourceObject))
+      else
+      if rProp.IsObject then
+      begin
+        if rSourceProp.IsObject then
+        begin
+          AObject := rProp.GetValue(Self).AsObject;
+          AObject.CopyFrom(rSourceProp.GetValue(ASourceObject).AsObject);
+        end;
+      end
+      else
+      if rProp.IsList then
+      begin
+        if rSourceProp.IsList then
+        begin
+          listType := rProp.GetListType(Self);
+          lValue   := rSourceProp.GetListArray(ASourceObject);
+          for i := 0 to Pred(lValue.GetArrayLength) do
+          begin
+            if lValue.GetArrayElement(i).IsObject then
+            begin
+              AObject := listType.AsInstance.MetaclassType.Create;
+              AObject.invokeMethod('create', []);
+              AObject.CopyFrom(lValue.GetArrayElement(i).AsObject);
+              rProp.GetValue(Self).AsObject.InvokeMethod('Add', [AObject]);
+            end;
+          end;
+        end;
+      end
+      else
+        rProp.SetValue(Self, rSourceProp.GetValue(ASourceObject));
+    except
+    end;
+  end;
+end;
 
 procedure THelpers4DObject.FromJSONObject(Value: TJSONObject);
 begin
