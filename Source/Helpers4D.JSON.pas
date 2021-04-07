@@ -156,7 +156,7 @@ begin
   jsonFile := TStringList.Create;
   try
     jsonFile.LoadFromFile(FileName);
-    Result := Self.FromString(FileName);
+    Result := Self.FromString(jsonFile.Text);
   finally
     jsonFile.Free;
   end;
