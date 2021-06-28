@@ -469,7 +469,7 @@ begin
   value := AProp.GetValue(AObject);
 
   if AProp.IsString then
-    Exit('"' + Value.AsString.Replace('\', '\\') + '"');
+    Exit('"' + Value.AsString.Replace('\', '\\').Replace('"', '\"') + '"');
 
   if AProp.IsInteger then
     Exit(value.AsInteger.ToString);

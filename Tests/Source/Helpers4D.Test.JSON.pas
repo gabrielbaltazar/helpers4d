@@ -54,7 +54,7 @@ begin
   FJSON := TJSONObject.Create;
   FJSON
     .Add('id', 1)
-    .Add('name', 'Name 1')
+    .Add('name', 'Name 1"')
     .AddDt('birthdayDate', EncodeDate(1990, 2, 13))
     .Add('height', 1.72)
     .Add('weight', 80.52)
@@ -104,7 +104,7 @@ begin
 
   Assert.IsNotNull(FPerson);
   Assert.AreEqual('1', FPerson.id.ToString);
-  Assert.AreEqual('Name 1', FPerson.name);
+  Assert.AreEqual('Name 1"', FPerson.name);
   Assert.AreEqual('1990-02-13', FPerson.birthdayDate.FormatYYYY_MM_DD);
   Assert.AreEqual('1,72', FPerson.height.ToString);
   Assert.AreEqual('80,52', FPerson.weight.ToString);
@@ -136,7 +136,7 @@ begin
 
   Assert.IsNotNull(FJSON);
   Assert.AreEqual(1, FJSON.ValueAsInteger('id'));
-  Assert.AreEqual('Name 1', FJSON.ValueAsString('name'));
+  Assert.AreEqual('Name 1"', FJSON.ValueAsString('name'));
   Assert.AreEqual('1990-02-13', FJSON.ValueAsDateTime('birthdayDate').Format('yyyy-MM-dd'));
   Assert.AreEqual('1,72', FJSON.ValueAsFloat('height').ToString);
   Assert.AreEqual('80,52', FJSON.ValueAsFloat('weight').ToString);
@@ -164,7 +164,7 @@ procedure THelpers4DTestJSON.TestReadValues;
 begin
   createJSON;
   Assert.AreEqual(1, FJSON.ValueAsInteger('id'));
-  Assert.AreEqual('Name 1', FJSON.ValueAsString('name'));
+  Assert.AreEqual('Name 1"', FJSON.ValueAsString('name'));
   Assert.AreEqual('1990-02-13', FJSON.ValueAsDateTime('birthdayDate').Format('yyyy-MM-dd'));
   Assert.AreEqual('1,72', FJSON.ValueAsFloat('height').ToString);
   Assert.AreEqual('80,52', FJSON.ValueAsFloat('weight').ToString);
