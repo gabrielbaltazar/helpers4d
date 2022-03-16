@@ -250,6 +250,7 @@ procedure THelpers4DJSONObject.ToObject(AObject: TObject);
 var
   rProp: TRttiProperty;
   jsonValue: TJSONValue;
+  strValue: String;
 begin
   if (not Assigned(Self)) or (not Assigned(AObject)) then
     Exit;
@@ -295,7 +296,10 @@ begin
 
     if rProp.IsFloat then
     begin
-      rProp.SetValue(AObject, jsonValue.AsFloat);
+      strValue := jsonValue.Value
+                    .Replace('.', FormatSettings.DecimalSeparator)
+                    .Replace(',', FormatSettings.DecimalSeparator);
+      rProp.SetValue(AObject, TValue.From<Double>( StrToFloatDef(strValue, 0)));
       Continue;
     end;
 
@@ -396,7 +400,9 @@ function THelpers4DJSONObject.ValueAsFloat(Name: string; Default: Double): Doubl
 var
   strValue: string;
 begin
-  strValue := ValueAsString(Name, Default.ToString);
+  strValue := ValueAsString(Name, Default.ToString)
+                .Replace('.', FormatSettings.DecimalSeparator)
+                .Replace(',', FormatSettings.DecimalSeparator);
   result := StrToFloatDef(strValue, Default);
 end;
 
