@@ -265,13 +265,12 @@ end;
 
 function THelpers4DHorseRequest.RaiseHorseException(Message: string; Args: array of const): EHorseException;
 begin
-  raise EHorseException
-    .Create(THTTPStatus.BadRequest,
-            'Bad Request',
-            Format(Message, Args),
-            Self.UnitName,
-            400,
-            TMessageType.Error);
+  raise EHorseException.New
+    .Status(THTTPStatus.BadRequest)
+    .Title('Bad Request')
+    .Error(Format(Message, Args))
+    .&Unit(Self.UnitName)
+    .&Type(TMessageType.Error);
 end;
 
 { THelpers4DHorseResponse }
