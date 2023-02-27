@@ -10,7 +10,6 @@ uses
   TestInsight.DUnitX,
   {$ELSE}
   DUnitX.Loggers.Console,
-  DUnitX.Loggers.Xml.NUnit,
   {$ENDIF }
   DUnitX.TestFramework,
   Helpers4D.Test.Base in 'Source\Helpers4D.Test.Base.pas',
@@ -29,58 +28,14 @@ uses
   Helpers4D.Horse.Controller in '..\Source\Helpers4D.Horse.Controller.pas',
   Helpers4D.Model.Test.Classes in 'Source\Helpers4D.Model.Test.Classes.pas',
   Helpers4D.DTO.Test.Classes in 'Source\Helpers4D.DTO.Test.Classes.pas',
-  Helpers4D.Test.CopyObjects in 'Source\Helpers4D.Test.CopyObjects.pas';
+  Helpers4D.Test.CopyObjects in 'Source\Helpers4D.Test.CopyObjects.pas',
+  Helpers4D.Numbers in '..\Source\Helpers4D.Numbers.pas',
+  Helpers4D.Test.Numbers in 'Source\Helpers4D.Test.Numbers.pas',
+  Helpers4D.Strings in '..\Source\Helpers4D.Strings.pas',
+  Helpers4D.Test.Strings in 'Source\Helpers4D.Test.Strings.pas';
 
-{$IFNDEF TESTINSIGHT}
-var
-  runner: ITestRunner;
-  results: IRunResults;
-  logger: ITestLogger;
-  nunitLogger : ITestLogger;
-{$ENDIF}
 begin
   IsConsole := False;
   ReportMemoryLeaksOnShutdown := True;
-{$IFDEF TESTINSIGHT}
   TestInsight.DUnitX.RunRegisteredTests;
-{$ELSE}
-  try
-    //Check command line options, will exit if invalid
-    TDUnitX.CheckCommandLine;
-    //Create the test runner
-    runner := TDUnitX.CreateRunner;
-    //Tell the runner to use RTTI to find Fixtures
-    runner.UseRTTI := True;
-    //When true, Assertions must be made during tests;
-    runner.FailsOnNoAsserts := False;
-
-    //tell the runner how we will log things
-    //Log to the console window if desired
-    if TDUnitX.Options.ConsoleMode <> TDunitXConsoleMode.Off then
-    begin
-      logger := TDUnitXConsoleLogger.Create(TDUnitX.Options.ConsoleMode = TDunitXConsoleMode.Quiet);
-      runner.AddLogger(logger);
-    end;
-    //Generate an NUnit compatible XML File
-    nunitLogger := TDUnitXXMLNUnitFileLogger.Create(TDUnitX.Options.XMLOutputFile);
-    runner.AddLogger(nunitLogger);
-
-    //Run tests
-    results := runner.Execute;
-    if not results.AllPassed then
-      System.ExitCode := EXIT_ERRORS;
-
-    {$IFNDEF CI}
-    //We don't want this happening when running under CI.
-    if TDUnitX.Options.ExitBehavior = TDUnitXExitBehavior.Pause then
-    begin
-      System.Write('Done.. press <Enter> key to quit.');
-      System.Readln;
-    end;
-    {$ENDIF}
-  except
-    on E: Exception do
-      System.Writeln(E.ClassName, ': ', E.Message);
-  end;
-{$ENDIF}
 end.

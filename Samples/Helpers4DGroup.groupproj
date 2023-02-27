@@ -1,0 +1,48 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{DB9FA09D-E9A9-4C2B-A5A7-7E0AF78986B9}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="..\Tests\TestHelper4D.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="FMX\FMXHelpers.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="TestHelper4D">
+        <MSBuild Projects="..\Tests\TestHelper4D.dproj"/>
+    </Target>
+    <Target Name="TestHelper4D:Clean">
+        <MSBuild Projects="..\Tests\TestHelper4D.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="TestHelper4D:Make">
+        <MSBuild Projects="..\Tests\TestHelper4D.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="FMXHelpers">
+        <MSBuild Projects="FMX\FMXHelpers.dproj"/>
+    </Target>
+    <Target Name="FMXHelpers:Clean">
+        <MSBuild Projects="FMX\FMXHelpers.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="FMXHelpers:Make">
+        <MSBuild Projects="FMX\FMXHelpers.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="TestHelper4D;FMXHelpers"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="TestHelper4D:Clean;FMXHelpers:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="TestHelper4D:Make;FMXHelpers:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>
